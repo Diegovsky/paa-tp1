@@ -1,7 +1,7 @@
 BUILD    ?= build
 SRC      := src
 
-CFLAGS   := -Wall -I$(SRC)
+CFLAGS   := -Wall -I$(SRC) -lm -g
 
 sources  := $(wildcard $(SRC)/*.c)
 
@@ -23,6 +23,7 @@ $(BUILD):
 
 clean:
 	rm -rf $(BUILD)
+	rm tp1
 
 .PHONY: clean
 
