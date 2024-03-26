@@ -1,130 +1,187 @@
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 #include <string.h>
+
+#include <unistd.h>
 
 #include "graph.h"
 #include "list.h"
 
-void graph_to_dot(graph* g) {
-    puts("digraph {");
-    list_foreach(g->vertices, vertex_data, vdata) {
-        list_foreach(vdata->edges, edge, e) {
-            printf("\t%c -> %c [label=%.1f]\n", e->v + 'a', e->u + 'a', e->weight);
-        }
+struct tp_info {
+    graph* g;
+    int k;
+    int end;
+    int start;
+};
+struct tp_info parse_info(FILE* input_file) {
+    graph* g = graph_new();
+    int m, n, k;
+    bool letters = false;
+    char* line = malloc(256);
+
+    fgets(line, 255, input_file);
+    if(strstr(line, "LETTER") != NULL) {
+        letters = true;
+        fgets(line, 255, input_file);
     }
-    puts("}");
-}
+    sscanf(line, "%d %d %d\n", &n, &m, &k);
 
+    list* cities_list = list_new(sizeof(vertex));
 
-list* graph_dijkstra(graph* g, vertex source, vertex dest) {
-    const size_t vertex_count = g->vertices->len;
-    vertex current = source;
-
-    // inicialização do vetor de distancia e caminho
-    weight distance[vertex_count];
-    vertex prev[vertex_count];
-    vertex visited[vertex_count];
-    for(int i = 0; i < g->vertices->len; i++) {
-        distance[i] = INFINITY;
-        prev[i] = NO_VERTEX;
-        visited[i] = 0;
+    for(int i = 0; i < n; i++) {
+        vertex v = graph_add_vertex(g);
+        list_push(cities_list, &v);
     }
-    distance[current] = 0;
 
-    for(;;) {
-        // Get vertex u with minimal distance from source;
-        vertex u = NO_VERTEX;
-        for(vertex i = 0; i < vertex_count; i++) {
-            if(visited[i]) continue;
-            else if(u == NO_VERTEX) u = i;
-
-            if(distance[u] > distance[i]) {
-                u = i;
-            }
+    int u, v;
+    weight w;
+    vertex* cities = cities_list->elements;
+    for(int i = 0; i < m; i++) {
+        do
+            if(fgets(line, 255, input_file) == NULL) goto end;
+        while(strcspn(line, "\n") == 0);
+        if(!letters) {
+            sscanf(line, "%d %d %d\n", &v, &u, &w);
+            v = cities[v-1];
+            u = cities[u-1];
+        } else {
+            sscanf(line, "%c %c %d\n", (char*)&v, (char*)&u, &w);
+            v -= 'a';
+            u -= 'a';
         }
-        // if we couldn't find any vertex or we found target, the set is empty.
-        if(u == NO_VERTEX || u == dest) goto end;
-
-        // Mark u as visited.
-        visited[u] = 1;
-
-        // Find which path is shortest.
-        vertex_data* udata = graph_get_vertex_data(g, u);
-        list_foreach(udata->edges, edge, e) {
-            vertex v = e->u;
-            if(visited[v]) continue;
-            weight alt = distance[u] + vertex_data_get_edge(udata, v)->weight;
-            if (alt < distance[v]) {
-                distance[v] = alt;
-                prev[v] = u;
-            }
-        }
+        graph_add_edge(g, v, u, w);
     }
     end:;
 
-    list* path = list_new(sizeof(vertex));
-    for(vertex u = dest; u != NO_VERTEX; u = prev[u]) {
-        list_push(path, &u);
-    }
+    int start = cities[0];
+    int end = cities[n-1];
 
-    // reverse path
-    vertex* path_start = (vertex*) path->elements;
-    vertex* path_end = ((vertex*) path->elements) + path->len-1;
-    while(path_start < path_end) {
-        vertex temp = *path_start;
-        *path_start = *path_end;
-        *path_end = temp;
-
-        path_start++;
-        path_end--;
-    }
-
-    return path;
+    free(line);
+    list_free(cities_list);
+    return (struct tp_info){
+        .g=g,
+        .k=k,
+        .start=start,
+        .end = end,
+    };
 }
 
-int main() {
-    graph* g = graph_new();
-
-    vertex a = graph_add_vertex(g);
-    vertex b = graph_add_vertex(g);
-    vertex c = graph_add_vertex(g);
-    vertex d = graph_add_vertex(g);
-    vertex e = graph_add_vertex(g);
-
-    graph_add_edge(g, a, b, 4);
-    graph_add_edge(g, a, d, 5);
-    graph_add_edge(g, b, d, 2);
-    graph_add_edge(g, c, d, 0);
-    graph_add_edge(g, e, a, 1);
-    graph_add_edge(g, d, e, 9);
-    graph_add_edge(g, e, c, 1);
-
-    // graph_to_dot(g);
-
-    list* path = graph_dijkstra(g, a, d);
-
-    bool visited[g->vertices->len];
+void graph_to_dot(graph* g, list* path) {
+    list* vertices = graph_get_vertices(g);
+    bool visited[vertices->len];
+    vertex edge_next[vertices->len];
     memset(visited, false, sizeof(visited));
+    memset(edge_next, NO_VERTEX, sizeof(edge_next));
 
-    list_foreach(path, vertex, v) {
-        fprintf(stderr, "%c\n", 'a' + *v);
-        visited[*v] = true;
+    if(path) {
+        list_foreach(path, edge*, eptr) {
+            edge* e = *eptr;
+            visited[e->v] = true;
+            visited[e->u] = true;
+            edge_next[e->v] = e->u;
+        }
     }
 
     puts("digraph {");
-    list_foreach(g->vertices, vertex_data, vdata) {
-        const char node_id = vdata->id + 'a';
-        if(visited[vdata->id]) {
-            printf("\t%c [color=red]\n", node_id);
+    list_foreach(graph_get_vertices(g), vertex_data, vdata) {
+        vertex id = vertex_data_get_id(vdata);
+        printf("\t%d [label=%c", id, id+'a');
+        if(visited[id]) {
+            printf("; color=red");
         }
-        list_foreach(vdata->edges, edge, e) {
-            printf("\t%c -> %c [label=%.1f]\n", node_id, e->u + 'a', e->weight);
+        printf("];\n");
+        list* edges = vertex_data_get_edges(vdata);
+        list_foreach(edges, edge, e) {
+            printf("\t%d -> %d [label=", id, e->u);
+            if(e->ghost) {
+                printf("\"%d (+%d)\"", e->weight, e->ghost);
+            } else {
+                printf("%d", e->weight);
+            }
+            if(edge_next[e->v] == e->u) {
+                printf("; color=green");
+            }
+            printf("];\n");
         }
     }
     puts("}");
+}
 
-    list_free(path);
+int edge_weight_cmp(const edge* e1, const edge* e2){ 
+    return (e1->weight) - (e2->weight);
+}
+
+int edge_weight_ghost_cmp(const edge* e1, const edge* e2) {
+    weight e1w =  (e1->weight + e1->ghost);
+    weight e2w = (e2->weight + e2->ghost);
+    return e2w - e1w;
+}
+
+int edge_cmp(const edge* e1, const edge* e2){ 
+    return !(e1->u == e2->u && e1->v == e2->v); 
+}
+
+int main(int argc, char** argv) {
+    FILE* input_file = NULL;
+    FILE* output_file = stderr;
+    char c;
+    while((c = getopt(argc, argv, "i:o:")) != -1) {
+        switch (c) {
+            case 'i':
+                input_file = fopen(optarg, "r");
+                if(!input_file) printf("Falha ao abrir arquivo %s\n", optarg);
+                break;
+            case 'o':
+                output_file = fopen(optarg, "w");
+                if(!output_file) printf("Falha ao abrir arquivo %s\n", optarg);
+                break;
+            default:
+                ;;
+        }
+    }
+    if(!(input_file && output_file)) {
+        if (!input_file) 
+            fputs("Faltando arquivo de entrada\n", stderr);
+        if (!output_file) 
+            fputs("Faltando arquivo de saida\n", stderr);
+        return 1;
+    }
+    struct tp_info info = parse_info(input_file);
+    graph* g = info.g;
+    // graph* g = simple_graph();
+
+    graph_to_dot(g, NULL);
+    list* visited = list_new(sizeof(edge*));
+
+    for(int i = 0; i < info.k; i++) {
+        list* path = graph_dijkstra(g, info.start, info.end);
+        graph_to_dot(g, path);
+
+        // edge* e = list_min(path, (element_comparator_fn)edge_weight_ghost_cmp);
+        list_foreach(path, edge*, e) {
+            (*e)->ghost++;
+        }
+
+        if(last_path && list_eq(last_path, path, (element_comparator_fn)edge_cmp)) {
+            i--;
+            continue;
+        }
+
+        int total = 0;
+        list_foreach(path, edge*, e) {
+            total += (*e)->weight;
+        }
+        fprintf(output_file, "%d ", total);
+        /* if(!last_path)
+            last_path = path;
+        else
+            list_free(path); */
+    }
+    fputs("\n", stderr);
+
     graph_free(g);
     return 0;
 }

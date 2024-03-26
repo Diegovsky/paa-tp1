@@ -15,7 +15,7 @@ objects  := $(addprefix $(BUILD)/, $(objects))
 tp1: $(BUILD) $(objects)
 	$(CC) $(objects) -o $@
 
-$(objects): $(BUILD)/%.o: $(SRC)/%.c
+$(objects): $(BUILD)/%.o: $(SRC)/%.c $(SRC)/%.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD):

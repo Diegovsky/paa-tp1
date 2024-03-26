@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -12,6 +13,7 @@ static void list_resize(list* l, size_t new_element_count) {
 
 list* list_new(size_t element_size) {
     list* l = calloc(sizeof(list), 1);
+    l->len = 0;
     l->element_size = element_size;
     list_resize(l, 4);
     return l;
@@ -21,6 +23,7 @@ list* list_new_from(size_t element_size, void* data, size_t element_count) {
     list* l = malloc(sizeof(list));
     l->element_size = element_size;
     l->len = element_count;
+    l->elements = NULL;
 
     list_resize(l, element_count);
     memcpy(l->elements, data, element_count * element_size);
@@ -66,6 +69,44 @@ void* list_get(list* l, size_t index) {
         return NULL;
     }
     return address_of(l, index);
+}
+
+bool list_remove(list* l, size_t index) {
+    if(index >= l->len) {
+        return false;
+    }
+    if(index < l->len-1) {
+        size_t bytes_moved = l->element_size * (l->len - (index + 1));
+        memmove(address_of(l, index), address_of(l, index+1), bytes_moved);
+    }
+    l->len--;
+    return true;
+}
+
+void list_sort(list* l, element_comparator_fn comparator) {
+    qsort(l->elements, l->len, l->element_size, comparator);
+}
+
+bool list_eq(list* l1, list* l2, element_comparator_fn comparator) {
+    if(l1->len != l2->len || l1->element_size != l2->element_size) return false;
+
+    for(int i = 0; i < l1->len; i++) {
+        if(comparator(address_of(l1, i), address_of(l2, i)) != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void* list_min(list* l, element_comparator_fn comparator) {
+    void* current = NULL;
+    for(int i = 0; i < l->len; i++) {
+        void* new = address_of(l, i);
+        if(!current || comparator(new, current) < 0) {
+            current = new;
+        }
+    }
+    return current;
 }
 
 void list_free(list* l) {
