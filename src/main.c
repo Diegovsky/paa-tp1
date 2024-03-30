@@ -34,10 +34,10 @@ struct tp_info parse_info(FILE* input_file) {
         list_push(cities_list, &v);
     }
 
-    int u, v;
-    weight w;
     vertex* cities = cities_list->elements;
     for(int i = 0; i < m; i++) {
+        int u = 0, v = 0;
+        weight w = 0;
         do
             if(fgets(line, 255, input_file) == NULL) goto end;
         while(strcspn(line, "\n") == 0);
@@ -161,11 +161,11 @@ int main(int argc, char** argv) {
             continue;
         } */
 
-        int total = 0;
+        weight total = 0;
         list_foreach(path, edge*, e) {
             total += (*e)->weight;
         }
-        fprintf(output_file, "%d ", total);
+        fprintf(output_file, "%u ", total);
         /* if(!last_path)
             last_path = path;
         else
