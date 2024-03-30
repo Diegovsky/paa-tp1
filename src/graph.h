@@ -11,7 +11,6 @@ typedef unsigned int weight;
 typedef struct {
     vertex v;
     vertex u;
-    weight ghost;
     weight weight;
 } edge;
 

@@ -48,7 +48,7 @@ bool graph_add_edge(graph* g, vertex v, vertex u, weight w) {
     if (!vdata || !udata) {
         return false;
     }
-    edge e = (edge){.v = v, .u = u, .weight = w, .ghost = 0};
+    edge e = (edge){.v = v, .u = u, .weight = w};
     list_push(vdata->edges, &e);
     return true;
 }
@@ -105,7 +105,7 @@ list* graph_dijkstra(graph* g, vertex source, vertex dest) {
         list_foreach(udata->edges, edge, e) {
             vertex v = e->u;
             if(visited[v]) continue;
-            weight alt = distance[u] + e->weight + e->ghost;
+            weight alt = distance[u] + e->weight;
             if (alt < distance[v]) {
                 distance[v] = alt;
                 prev[v] = u;

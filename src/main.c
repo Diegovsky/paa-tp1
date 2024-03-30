@@ -1,7 +1,5 @@
-#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -96,11 +94,7 @@ void graph_to_dot(graph* g, list* path) {
         list* edges = vd_get_edges(vdata);
         list_foreach(edges, edge, e) {
             printf("\t%d -> %d [label=", id, e->u);
-            if(e->ghost) {
-                printf("\"%d (+%d)\"", e->weight, e->ghost);
-            } else {
-                printf("%d", e->weight);
-            }
+            printf("%d", e->weight);
             if(edge_next[e->v] == e->u) {
                 printf("; color=green");
             }
@@ -111,13 +105,7 @@ void graph_to_dot(graph* g, list* path) {
 }
 
 int edge_weight_cmp(const edge* e1, const edge* e2){ 
-    return (e1->weight) - (e2->weight);
-}
-
-int edge_weight_ghost_cmp(const edge* e1, const edge* e2) {
-    weight e1w =  (e1->weight + e1->ghost);
-    weight e2w = (e2->weight + e2->ghost);
-    return e2w - e1w;
+    return e1->weight - (e2->weight);
 }
 
 int edge_cmp(const edge* e1, const edge* e2){ 
@@ -154,16 +142,12 @@ int main(int argc, char** argv) {
     // graph* g = simple_graph();
 
     graph_to_dot(g, NULL);
-    list* visited = list_new(sizeof(edge*));
 
     for(int i = 0; i < info.k; i++) {
         list* path = graph_dijkstra(g, info.start, info.end);
         graph_to_dot(g, path);
 
         // edge* e = list_min(path, (element_comparator_fn)edge_weight_ghost_cmp);
-        list_foreach(visited, edge*, e) {
-            (*e)->ghost++;
-        }
 
         /* if(last_path && list_eq(last_path, path, (element_comparator_fn)edge_cmp)) {
             i--;
@@ -180,7 +164,7 @@ int main(int argc, char** argv) {
         else
             list_free(path); */
     }
-    fputs("\n", stderr);
+    fputs("\n", output_file);
 
     graph_free(g);
     return 0;
