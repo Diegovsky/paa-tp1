@@ -48,7 +48,7 @@ bool graph_add_edge(graph* g, vertex v, vertex u, weight w) {
     if (!vdata || !udata) {
         return false;
     }
-    edge e = (edge){.v = v, .u = u, .weight = w};
+    edge e = (edge){.v = v, .u = u, .weight = w, .ghost = 0};
     list_push(vdata->edges, &e);
     return true;
 }
@@ -119,7 +119,7 @@ list* graph_dijkstra(graph* g, vertex source, vertex dest) {
     for(vertex v = dest; v != NO_VERTEX; v = prev[v]) {
         if(last != NO_VERTEX) {
             vertex_data* vdata = graph_get_vertex_data(g, v);
-            edge* e = vertex_data_get_edge(vdata, last);
+            edge* e = vd_get_edge(vdata, last);
             list_insert(path, &e, 0);
         }
         last = v;
@@ -128,7 +128,7 @@ list* graph_dijkstra(graph* g, vertex source, vertex dest) {
     return path;
 }
 
-edge* vertex_data_get_edge(vertex_data* vdata, vertex u) {
+edge* vd_get_edge(vertex_data* vdata, vertex u) {
     list_foreach(vdata->edges, edge, e) {
         if(e->u == u) {
             return e;
@@ -137,11 +137,11 @@ edge* vertex_data_get_edge(vertex_data* vdata, vertex u) {
     return NULL;
 }
 
-list* vertex_data_get_edges(vertex_data* vdata) {
+list* vd_get_edges(vertex_data* vdata) {
     return vdata->edges;
 }
 
-vertex vertex_data_get_id(vertex_data* vdata) {
+vertex vd_get_id(vertex_data* vdata) {
     return vdata->id;
 }
 

@@ -29,8 +29,8 @@ bool graph_remove_edge(graph* g, vertex v, vertex u);
 
 list* graph_dijkstra(graph* g, vertex source, vertex dest);
 
-edge* vertex_data_get_edge(vertex_data* vdata, vertex u); 
-list* vertex_data_get_edges(vertex_data* vdata); 
-vertex vertex_data_get_id(vertex_data* vdata); 
+edge* vd_get_edge(vertex_data* vdata, vertex u); 
+list* vd_get_edges(vertex_data* vdata); 
+vertex vd_get_id(vertex_data* vdata); 
 
 void graph_free(graph* g);

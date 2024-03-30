@@ -87,13 +87,13 @@ void graph_to_dot(graph* g, list* path) {
 
     puts("digraph {");
     list_foreach(graph_get_vertices(g), vertex_data, vdata) {
-        vertex id = vertex_data_get_id(vdata);
+        vertex id = vd_get_id(vdata);
         printf("\t%d [label=%c", id, id+'a');
         if(visited[id]) {
             printf("; color=red");
         }
         printf("];\n");
-        list* edges = vertex_data_get_edges(vdata);
+        list* edges = vd_get_edges(vdata);
         list_foreach(edges, edge, e) {
             printf("\t%d -> %d [label=", id, e->u);
             if(e->ghost) {
@@ -161,14 +161,14 @@ int main(int argc, char** argv) {
         graph_to_dot(g, path);
 
         // edge* e = list_min(path, (element_comparator_fn)edge_weight_ghost_cmp);
-        list_foreach(path, edge*, e) {
+        list_foreach(visited, edge*, e) {
             (*e)->ghost++;
         }
 
-        if(last_path && list_eq(last_path, path, (element_comparator_fn)edge_cmp)) {
+        /* if(last_path && list_eq(last_path, path, (element_comparator_fn)edge_cmp)) {
             i--;
             continue;
-        }
+        } */
 
         int total = 0;
         list_foreach(path, edge*, e) {
