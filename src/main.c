@@ -115,12 +115,16 @@ int edge_cmp(const edge* e1, const edge* e2){
 int main(int argc, char** argv) {
     FILE* input_file = NULL;
     FILE* output_file = stderr;
+    bool draw_graph = false;
     char c;
-    while((c = getopt(argc, argv, "i:o:")) != -1) {
+    while((c = getopt(argc, argv, "i:o:g")) != -1) {
         switch (c) {
             case 'i':
                 input_file = fopen(optarg, "r");
                 if(!input_file) printf("Falha ao abrir arquivo %s\n", optarg);
+                break;
+            case 'g':
+                draw_graph = true;
                 break;
             case 'o':
                 output_file = fopen(optarg, "w");
@@ -141,11 +145,14 @@ int main(int argc, char** argv) {
     graph* g = info.g;
     // graph* g = simple_graph();
 
-    graph_to_dot(g, NULL);
+    if(draw_graph)
+        graph_to_dot(g, NULL);
 
     for(int i = 0; i < info.k; i++) {
         list* path = graph_dijkstra(g, info.start, info.end);
-        graph_to_dot(g, path);
+
+        if(draw_graph)
+            graph_to_dot(g, path);
 
         // edge* e = list_min(path, (element_comparator_fn)edge_weight_ghost_cmp);
 
@@ -164,7 +171,7 @@ int main(int argc, char** argv) {
         else
             list_free(path); */
     }
-    fputs("\n", output_file);
+    fputs("\n", stderr);
 
     graph_free(g);
     return 0;
