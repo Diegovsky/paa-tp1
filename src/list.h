@@ -22,6 +22,8 @@ void* list_get(list* l, size_t index);
 
 bool list_remove(list* l, size_t index);
 
+void list_resize(list* l, size_t new_element_count);
+
 typedef int (*element_comparator_fn)(const void*, const void*);
 void list_sort(list* l, element_comparator_fn comparator);
 bool list_eq(list* l1, list* l2, element_comparator_fn comparator);

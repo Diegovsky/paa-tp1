@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "graph.h"
+#include "heap.h"
 #include "list.h"
 
 struct tp_info {
@@ -148,30 +149,11 @@ int main(int argc, char** argv) {
     if(draw_graph)
         graph_to_dot(g, NULL);
 
-    for(int i = 0; i < info.k; i++) {
-        list* path = graph_dijkstra(g, info.start, info.end);
-
-        if(draw_graph)
-            graph_to_dot(g, path);
-
-        // edge* e = list_min(path, (element_comparator_fn)edge_weight_ghost_cmp);
-
-        /* if(last_path && list_eq(last_path, path, (element_comparator_fn)edge_cmp)) {
-            i--;
-            continue;
-        } */
-
-        weight total = 0;
-        list_foreach(path, edge*, e) {
-            total += (*e)->weight;
-        }
-        fprintf(output_file, "%u ", total);
-        /* if(!last_path)
-            last_path = path;
-        else
-            list_free(path); */
+    list* paths = graph_shortest_paths(g, info.k, info.start, info.end);
+    list_foreach(paths, weight, w) {
+        fprintf(output_file, "%u ", *w);
     }
-    fputs("\n", stderr);
+    fputs("\n", output_file);
 
     graph_free(g);
     return 0;

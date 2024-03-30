@@ -6,7 +6,7 @@
 
 #include "list.h"
 
-static void list_resize(list* l, size_t new_element_count) {
+void list_resize(list* l, size_t new_element_count) {
     l->cap = new_element_count;
     l->elements = realloc(l->elements, l->cap * l->element_size);
 }
@@ -65,7 +65,7 @@ bool list_insert(list* l, void* element, size_t index) {
 
 void* list_get(list* l, size_t index) {
     // Caso o índice esteja fora do vetor, retorna NULL;
-    if (index > l->len) {
+    if (index >= l->len) {
         return NULL;
     }
     return address_of(l, index);

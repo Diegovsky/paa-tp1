@@ -4,6 +4,7 @@
 
 #include "graph.h"
 #include "list.h"
+#include "heap.h"
 
 
 struct graph {
@@ -68,52 +69,7 @@ bool graph_remove_edge(graph* g, vertex v, vertex u) {
     return false;
 }
 
-list* graph_dijkstra(graph* g, vertex source, vertex dest) {
-    const size_t vertex_count = g->vertices->len;
-    vertex current = source;
-
-    // inicialização do vetor de distancia e caminho
-    weight distance[vertex_count];
-    vertex prev[vertex_count];
-    vertex visited[vertex_count];
-    for(int i = 0; i < vertex_count; i++) {
-        distance[i] = ~0;
-        prev[i] = NO_VERTEX;
-        visited[i] = 0;
-    }
-    distance[current] = 0;
-
-    for(;;) {
-        // Get vertex u with minimal distance from source;
-        vertex u = NO_VERTEX;
-        for(vertex i = 0; i < vertex_count; i++) {
-            if(visited[i]) continue;
-            else if(u == NO_VERTEX) u = i;
-
-            if(distance[u] > distance[i]) {
-                u = i;
-            }
-        }
-        // if we couldn't find any vertex or we found target, the set is empty.
-        if(u == NO_VERTEX || u == dest) goto end;
-
-        // Mark u as visited.
-        visited[u] = 1;
-
-        // Find which path is shortest.
-        vertex_data* udata = graph_get_vertex_data(g, u);
-        list_foreach(udata->edges, edge, e) {
-            vertex v = e->u;
-            if(visited[v]) continue;
-            weight alt = distance[u] + e->weight;
-            if (alt < distance[v]) {
-                distance[v] = alt;
-                prev[v] = u;
-            }
-        }
-    }
-    end:;
-
+/* list* reverse_prev_path(graph* g, vertex *prev, vertex dest) {
     list* path = list_new(sizeof(edge*));
     vertex last = NO_VERTEX;
     for(vertex v = dest; v != NO_VERTEX; v = prev[v]) {
@@ -126,6 +82,48 @@ list* graph_dijkstra(graph* g, vertex source, vertex dest) {
     }
 
     return path;
+} */
+
+list* graph_shortest_paths(graph* g, int k, vertex source, vertex dest) {
+    const size_t vertex_count = g->vertices->len;
+    vertex current = source;
+
+    // inicialização do vetor de distancia e caminho
+    weight distance[vertex_count];
+    vertex prev[vertex_count];
+    int visit_count[vertex_count];
+    for(int i = 0; i < vertex_count; i++) {
+        distance[i] = ~0;
+        prev[i] = NO_VERTEX;
+        visit_count[i] = 0;
+    }
+    distance[current] = 0;
+
+    heap* queue = heap_new(sizeof(vertex));
+    heap_push(queue, &source, 0);
+
+
+    list* paths = list_new(sizeof(list*));
+    while(visit_count[dest] < k) {
+        // Get vertex u with minimal distance from source;
+        vertex u;
+        weight w;
+        heap_pop(queue, &u, &w);
+        // Mark u as visited.
+        visit_count[u] += 1;
+        if(u == dest) {
+            list_push(paths, &w);
+        }
+
+        // Find which path is shortest.
+        vertex_data* udata = graph_get_vertex_data(g, u);
+        list_foreach(udata->edges, edge, e) {
+            vertex v = e->u;
+            heap_push(queue, &v, e->weight + w);
+        }
+    }
+
+    return paths;
 }
 
 edge* vd_get_edge(vertex_data* vdata, vertex u) {

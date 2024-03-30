@@ -26,7 +26,7 @@ list* graph_get_vertices(graph* g);
 bool graph_add_edge(graph* g, vertex v, vertex u, weight w);
 bool graph_remove_edge(graph* g, vertex v, vertex u);
 
-list* graph_dijkstra(graph* g, vertex source, vertex dest);
+list* graph_shortest_paths(graph* g, int k, vertex source, vertex dest);
 
 edge* vd_get_edge(vertex_data* vdata, vertex u); 
 list* vd_get_edges(vertex_data* vdata); 
