@@ -6,7 +6,7 @@
 
 #include "list.h"
 
-void list_resize(list* l, size_t new_element_count) {
+static void list_resize(list* l, size_t new_element_count) {
     l->cap = new_element_count;
     l->elements = realloc(l->elements, l->cap * l->element_size);
 }
@@ -19,15 +19,9 @@ list* list_new(size_t element_size) {
     return l;
 }
 
-list* list_new_from(size_t element_size, void* data, size_t element_count) {
-    list* l = malloc(sizeof(list));
-    l->element_size = element_size;
-    l->len = element_count;
-    l->elements = NULL;
-
-    list_resize(l, element_count);
-    memcpy(l->elements, data, element_count * element_size);
-
+list* list_new_with_capacity(size_t element_size, size_t capacity) {
+    list* l = list_new(element_size);
+    list_resize(l, capacity);
     return l;
 }
 

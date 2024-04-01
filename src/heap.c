@@ -82,16 +82,16 @@ void heap_push(heap* h, void* element, weight w) {
 
     free(new_slot);
 }
-void heap_pop(heap* h, void* element, weight* w) {
+
+bool heap_pop(heap* h, void* element, weight* w) {
     const size_t element_size = h->list.element_size;
 
     slot *first = list_get(&h->list, 0);
 
-    // Se não há elementos ou elementos preenchidos, sinalizamos isso colocando
-    // a constante NO_WEIGHT em *w
+    // Se não há elementos ou elementos preenchidos, retornamos false.
     if(h->list.len == 0 || first->w == NO_WEIGHT) {
         *w = NO_WEIGHT;
-        return;
+        return false;
     }
 
     // Copiar elemento e peso para os argumentos
@@ -102,6 +102,7 @@ void heap_pop(heap* h, void* element, weight* w) {
     first->w = NO_WEIGHT;
 
     heapify(h, 0);
+    return true;
 }
 
 void heap_free(heap* h) {

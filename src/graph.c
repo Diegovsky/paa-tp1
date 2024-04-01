@@ -16,15 +16,20 @@ struct vertex_data {
     vertex id;
 };
 
+struct cslot {
+    weight w;
+    char c;
+};
+
 
 static vertex_data vdata_new(vertex id) {
     vertex_data vdata = {.edges = list_new(sizeof(edge)), .id=id};
     return vdata;
 }
 
-graph* graph_new() {
+graph* graph_new(size_t vertex_capacity) {
     graph* g = malloc(sizeof(graph));
-    g->vertices = list_new(sizeof(vertex_data));
+    g->vertices = list_new_with_capacity(sizeof(vertex_data), vertex_capacity);
     return g;
 }
 
@@ -69,35 +74,13 @@ bool graph_remove_edge(graph* g, vertex v, vertex u) {
     return false;
 }
 
-/* list* reverse_prev_path(graph* g, vertex *prev, vertex dest) {
-    list* path = list_new(sizeof(edge*));
-    vertex last = NO_VERTEX;
-    for(vertex v = dest; v != NO_VERTEX; v = prev[v]) {
-        if(last != NO_VERTEX) {
-            vertex_data* vdata = graph_get_vertex_data(g, v);
-            edge* e = vd_get_edge(vdata, last);
-            list_insert(path, &e, 0);
-        }
-        last = v;
-    }
-
-    return path;
-} */
-
 list* graph_shortest_paths(graph* g, int k, vertex source, vertex dest) {
     const size_t vertex_count = g->vertices->len;
-    vertex current = source;
 
-    // inicialização do vetor de distancia e caminho
-    weight distance[vertex_count];
-    vertex prev[vertex_count];
     int visit_count[vertex_count];
     for(int i = 0; i < vertex_count; i++) {
-        distance[i] = ~0;
-        prev[i] = NO_VERTEX;
         visit_count[i] = 0;
     }
-    distance[current] = 0;
 
     heap* queue = heap_new(sizeof(vertex));
     heap_push(queue, &source, 0);
@@ -108,7 +91,9 @@ list* graph_shortest_paths(graph* g, int k, vertex source, vertex dest) {
         // Get vertex u with minimal distance from source;
         vertex u;
         weight w;
-        heap_pop(queue, &u, &w);
+        // heap vazia;
+        if(!heap_pop(queue, &u, &w)) break;
+        if(visit_count[u] == k) continue;
         // Mark u as visited.
         visit_count[u] += 1;
         if(u == dest) {
@@ -122,6 +107,8 @@ list* graph_shortest_paths(graph* g, int k, vertex source, vertex dest) {
             heap_push(queue, &v, e->weight + w);
         }
     }
+
+    heap_free(queue);
 
     return paths;
 }
@@ -142,8 +129,6 @@ list* vd_get_edges(vertex_data* vdata) {
 vertex vd_get_id(vertex_data* vdata) {
     return vdata->id;
 }
-
-
 
 void graph_free(graph* g) {
     list_foreach(g->vertices, vertex_data, vdata) {

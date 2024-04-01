@@ -1,7 +1,7 @@
 BUILD    ?= build
 SRC      := src
 
-CFLAGS   := -Wall -I$(SRC) -lm -g
+CFLAGS   := $(CFLAGS) -Wall -I$(SRC) -lm -g -Werror -O2
 
 sources  := $(wildcard $(SRC)/*.c)
 

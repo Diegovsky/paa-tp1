@@ -5,6 +5,9 @@
 
 #include <unistd.h>
 
+#include <sys/time.h>
+#include <sys/resource.h>
+
 #include "graph.h"
 #include "heap.h"
 #include "list.h"
@@ -16,7 +19,6 @@ struct tp_info {
     int start;
 };
 struct tp_info parse_info(FILE* input_file) {
-    graph* g = graph_new();
     int m, n, k;
     bool letters = false;
     char* line = malloc(256);
@@ -27,6 +29,7 @@ struct tp_info parse_info(FILE* input_file) {
         fgets(line, 255, input_file);
     }
     sscanf(line, "%d %d %d\n", &n, &m, &k);
+    graph* g = graph_new(n);
 
     list* cities_list = list_new(sizeof(vertex));
 
@@ -43,11 +46,11 @@ struct tp_info parse_info(FILE* input_file) {
             if(fgets(line, 255, input_file) == NULL) goto end;
         while(strcspn(line, "\n") == 0);
         if(!letters) {
-            sscanf(line, "%d %d %d\n", &v, &u, &w);
+            sscanf(line, "%d %d %lu\n", &v, &u, &w);
             v = cities[v-1];
             u = cities[u-1];
         } else {
-            sscanf(line, "%c %c %d\n", (char*)&v, (char*)&u, &w);
+            sscanf(line, "%c %c %lu\n", (char*)&v, (char*)&u, &w);
             v -= 'a';
             u -= 'a';
         }
@@ -68,64 +71,48 @@ struct tp_info parse_info(FILE* input_file) {
     };
 }
 
-void graph_to_dot(graph* g, list* path) {
-    list* vertices = graph_get_vertices(g);
-    bool visited[vertices->len];
-    vertex edge_next[vertices->len];
-    memset(visited, false, sizeof(visited));
-    memset(edge_next, NO_VERTEX, sizeof(edge_next));
+typedef struct {
+    struct rusage rtime;
+    struct timeval tv;
+} instant;
 
-    if(path) {
-        list_foreach(path, edge*, eptr) {
-            edge* e = *eptr;
-            visited[e->v] = true;
-            visited[e->u] = true;
-            edge_next[e->v] = e->u;
-        }
-    }
-
-    puts("digraph {");
-    list_foreach(graph_get_vertices(g), vertex_data, vdata) {
-        vertex id = vd_get_id(vdata);
-        printf("\t%d [label=%c", id, id+'a');
-        if(visited[id]) {
-            printf("; color=red");
-        }
-        printf("];\n");
-        list* edges = vd_get_edges(vdata);
-        list_foreach(edges, edge, e) {
-            printf("\t%d -> %d [label=", id, e->u);
-            printf("%d", e->weight);
-            if(edge_next[e->v] == e->u) {
-                printf("; color=green");
-            }
-            printf("];\n");
-        }
-    }
-    puts("}");
+instant instant_now() {
+    instant now;
+    getrusage(RUSAGE_SELF, &now.rtime);
+    gettimeofday(&now.tv, NULL);
+    return now;
 }
 
-int edge_weight_cmp(const edge* e1, const edge* e2){ 
-    return e1->weight - (e2->weight);
+static inline double tv_elapsed(struct timeval after, struct timeval before) {
+    struct timeval diff;
+    timersub(&after, &before, &diff);
+    return (double)diff.tv_sec + diff.tv_usec/1000000.0;
 }
 
-int edge_cmp(const edge* e1, const edge* e2){ 
-    return !(e1->u == e2->u && e1->v == e2->v); 
+static void instant_print_elapsed(instant after, instant before) {
+    double sys = tv_elapsed(after.rtime.ru_stime, before.rtime.ru_stime);
+    double user = tv_elapsed(after.rtime.ru_utime, before.rtime.ru_utime);
+    double phys = tv_elapsed(after.tv, before.tv);
+#ifndef MACHINE
+    printf("\tSystem time: %.3lf segundos\n", sys);
+    printf("\tUser time: %.3lf segundos\n", user);
+    printf("\tTempo físico %.3lf segundos\n", phys);
+#else
+    printf("%.3lf\n", sys);
+    printf("%.3lf\n", user);
+    printf("%.3lf\n", phys);
+#endif
 }
 
 int main(int argc, char** argv) {
     FILE* input_file = NULL;
     FILE* output_file = stderr;
-    bool draw_graph = false;
     char c;
-    while((c = getopt(argc, argv, "i:o:g")) != -1) {
+    while((c = getopt(argc, argv, "i:o:")) != -1) {
         switch (c) {
             case 'i':
                 input_file = fopen(optarg, "r");
                 if(!input_file) printf("Falha ao abrir arquivo %s\n", optarg);
-                break;
-            case 'g':
-                draw_graph = true;
                 break;
             case 'o':
                 output_file = fopen(optarg, "w");
@@ -142,19 +129,33 @@ int main(int argc, char** argv) {
             fputs("Faltando arquivo de saida\n", stderr);
         return 1;
     }
+
+    instant before = instant_now();
     struct tp_info info = parse_info(input_file);
+    instant after = instant_now();
+    #ifndef MACHINE
+    printf("Tempo de IO:\n");
+    #endif
+    instant_print_elapsed(after, before);
+
     graph* g = info.g;
-    // graph* g = simple_graph();
 
-    if(draw_graph)
-        graph_to_dot(g, NULL);
-
+    before = instant_now();
     list* paths = graph_shortest_paths(g, info.k, info.start, info.end);
+    after = instant_now();
+    #ifndef MACHINE
+    printf("Tempo de resolução:\n");
+    #endif
+    instant_print_elapsed(after, before);
+
     list_foreach(paths, weight, w) {
-        fprintf(output_file, "%u ", *w);
+        fprintf(output_file, "%lu ", *w);
     }
     fputs("\n", output_file);
 
+    list_free(paths);
     graph_free(g);
+    fclose(input_file);
+    fclose(output_file);
     return 0;
 }

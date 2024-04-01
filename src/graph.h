@@ -4,10 +4,15 @@
 #include "list.h"
 
 typedef unsigned int vertex;
-typedef unsigned int weight;
+typedef unsigned long int weight;
 
 #define NO_VERTEX ((vertex)~0)
 
+/* Representa uma aresta (arco) no grafo.
+ * v: nó de origem
+ * u: nó de destino
+ * w: peso associado.
+ */
 typedef struct {
     vertex v;
     vertex u;
@@ -17,9 +22,19 @@ typedef struct {
 typedef struct vertex_data vertex_data;
 typedef struct graph graph;
 
-graph* graph_new();
+/* Cria e inicializa um grafo.
+ *
+ * Espera-se que sejam inseridos `vertex_capacity` vértices,
+ * mas podem ser inseridos mais.
+ */
+graph* graph_new(size_t vertex_capacity);
 
+
+/* Adiciona um vértice no grafo e retorna seu valor.
+*/
 vertex graph_add_vertex(graph* g);
+/* Retorna uma estrutura de dados auxiliar que permite buscas rápidas sobre ligações de um nó
+*/
 vertex_data* graph_get_vertex_data(graph* g, vertex v);
 list* graph_get_vertices(graph* g);
 
