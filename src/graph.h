@@ -19,6 +19,15 @@ typedef struct {
     weight weight;
 } edge;
 
+struct tp_info {
+    struct graph* g;
+    int k;
+    int end;
+    int start;
+};
+
+
+
 typedef struct vertex_data vertex_data;
 typedef struct graph graph;
 
@@ -48,3 +57,7 @@ list* vd_get_edges(vertex_data* vdata);
 vertex vd_get_id(vertex_data* vdata); 
 
 void graph_free(graph* g);
+
+
+/*Ler o grafo do arquivo e representa-o com lista de adjacência*/
+struct tp_info parse_info(FILE* input_file);
