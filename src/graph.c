@@ -7,21 +7,6 @@
 #include "heap.h"
 
 
-struct graph {
-    list* vertices;
-};
-
-struct vertex_data {
-    list* edges;
-    vertex id;
-};
-
-struct cslot {
-    weight w;
-    char c;
-};
-
-
 static vertex_data vdata_new(vertex id) {
     vertex_data vdata = {.edges = list_new(sizeof(edge)), .id=id};
     return vdata;
