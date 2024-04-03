@@ -17,7 +17,7 @@ heap* heap_new(size_t element_size) {
     return (heap*)list_new(element_size+sizeof(slot));
 }
 
-#ifdef HEAP_LIST
+#ifndef HEAP_LIST
 
 static void memswap(void *a, void *b, size_t element_size) {
     char* aptr = a;
@@ -27,36 +27,6 @@ static void memswap(void *a, void *b, size_t element_size) {
         aptr[i] = bptr[i];
         bptr[i] = temp;
     }
-}
-
-static void heapify(heap* h, size_t i) {
-    slot* parent = list_get(&h->list, i);
-
-    // O nodo atual não existe ou está vazio
-    if(parent == NULL) return;
-    
-    slot *left = list_get(&h->list, i*2+1);
-    slot *right = list_get(&h->list, i*2+2);
-
-    slot *next = parent;
-
-    int nexti = i;
-    if(left && left->w < next->w) {
-        next = left;
-        nexti = i*2+1;
-    }
-    if (right && right->w < next->w) {
-        next = right;
-        nexti = i*2+2;
-    }
-
-    if (next == parent) return;
-
-    // Trocamos o menor dos filhos com o pai
-    // e depois, repetimos o processo para o filho;
-    memswap(parent, next, h->list.element_size);
-    heapify(h, nexti);
-
 }
 
 // Cria e retorna uma fila de prioridade a partir de um vetor;
@@ -102,7 +72,34 @@ bool heap_pop(heap* h, void* element, weight* w) {
     // Invalidar slot
     first->w = NO_WEIGHT;
 
-    heapify(h, 0);
+    size_t i = 0;
+    slot* parent;
+    while((parent = list_get(&h->list, i))) {
+        // O nodo atual não existe ou está vazio
+        if(parent == NULL) break;
+
+        slot *left = list_get(&h->list, i*2+1);
+        slot *right = list_get(&h->list, i*2+2);
+
+        slot *next = parent;
+
+        int nexti = i;
+        if(left && left->w < next->w) {
+            next = left;
+            nexti = i*2+1;
+        }
+        if (right && right->w < next->w) {
+            next = right;
+            nexti = i*2+2;
+        }
+
+        if (next == parent) break;
+
+        // Trocamos o menor dos filhos com o pai
+        // e depois, repetimos o processo para o filho;
+        memswap(parent, next, h->list.element_size);
+        i = nexti;
+    }
     return true;
 }
 
@@ -110,23 +107,27 @@ bool heap_pop(heap* h, void* element, weight* w) {
 
 void heap_push(heap* h, void* element, weight w) {
     list* l = &h->list;
-    size_t search_breadth = l->len;
-    size_t i = search_breadth/2;
-    for(;;) {
-        search_breadth >>= 1;
-        slot* s = list_get(l, i);
-        if(s->w == w) break;
+    size_t left = 0;
+    size_t right = l->len-1;
+    while(left <= right) {
+        size_t middle = left + (right - left) / 2;
+        slot* s = list_get(l, middle);
+
+        if(!s || s->w == w) break;
         else if(s->w < w) {
-            i += search_breadth;
+            right = middle - 1;
         } else {
-            i -= search_breadth;
+            left = middle + 1;
         }
     }
-    slot* s = malloc(l->element_size);
-    s->w = w;
-    memcpy(s->ptr, element, l->element_size - sizeof(slot));
-    list_insert(l, s, i);
-    free(s);
+
+    slot *new_slot = malloc(l->element_size);
+    memcpy(&new_slot->ptr, element, l->element_size - sizeof(slot));
+    new_slot->w = w;
+
+    list_insert(l, new_slot, left);
+
+    free(new_slot);
 }
 
 bool heap_pop(heap* h, void* element, weight* w) {
@@ -134,6 +135,7 @@ bool heap_pop(heap* h, void* element, weight* w) {
     slot* s = list_get(l, l->len-1);
     if(s == NULL) return false;
     memcpy(element, s->ptr, l->element_size - sizeof(slot));
+    *w = s->w;
     list_remove(l, l->len-1);
     return true;
 }
