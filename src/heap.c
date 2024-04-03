@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 typedef struct {
     weight w;
     char ptr[];
@@ -17,6 +16,8 @@ struct heap {
 heap* heap_new(size_t element_size) {
     return (heap*)list_new(element_size+sizeof(slot));
 }
+
+#ifdef HEAP_LIST
 
 static void memswap(void *a, void *b, size_t element_size) {
     char* aptr = a;
@@ -104,6 +105,40 @@ bool heap_pop(heap* h, void* element, weight* w) {
     heapify(h, 0);
     return true;
 }
+
+#else 
+
+void heap_push(heap* h, void* element, weight w) {
+    list* l = &h->list;
+    size_t search_breadth = l->len;
+    size_t i = search_breadth/2;
+    for(;;) {
+        search_breadth >>= 1;
+        slot* s = list_get(l, i);
+        if(s->w == w) break;
+        else if(s->w < w) {
+            i += search_breadth;
+        } else {
+            i -= search_breadth;
+        }
+    }
+    slot* s = malloc(l->element_size);
+    s->w = w;
+    memcpy(s->ptr, element, l->element_size - sizeof(slot));
+    list_insert(l, s, i);
+    free(s);
+}
+
+bool heap_pop(heap* h, void* element, weight* w) {
+    list* l = &h->list;
+    slot* s = list_get(l, l->len-1);
+    if(s == NULL) return false;
+    memcpy(element, s->ptr, l->element_size - sizeof(slot));
+    list_remove(l, l->len-1);
+    return true;
+}
+
+#endif
 
 void heap_free(heap* h) {
     list_free(&h->list);

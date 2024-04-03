@@ -1,7 +1,7 @@
 BUILD    ?= build
 SRC      := src
 
-CFLAGS   := $(CFLAGS) -Wall -I$(SRC) -lm -g -Werror -O2
+CFLAGS   := $(CFLAGS) -Wall -I$(SRC) -Werror -g -O3
 
 sources  := $(wildcard $(SRC)/*.c)
 
@@ -15,8 +15,12 @@ objects  := $(addprefix $(BUILD)/, $(objects))
 tp1: $(BUILD) $(objects)
 	$(CC) $(objects) -o $@
 
-$(objects): $(BUILD)/%.o: $(SRC)/%.c $(SRC)/%.h
+$(BUILD)/%.o: $(SRC)/%.c $(SRC)/%.h
 	$(CC) $(CFLAGS) -c $< -o $@
+
+$(BUILD)/heap-list.o: src/heap-list.c src/heap.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
 
 $(BUILD):
 	mkdir -p $(BUILD)

@@ -6,13 +6,6 @@
 #include "list.h"
 #include "heap.h"
 
-struct tp_info {
-    struct graph* g;
-    int k;
-    int end;
-    int start;
-};
-
 struct graph {
     list* vertices;
 };

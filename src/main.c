@@ -6,7 +6,6 @@
 #include <unistd.h>
 
 #include "graph.h"
-#include "heap.h"
 #include "list.h"
 #include "timer.h"
 

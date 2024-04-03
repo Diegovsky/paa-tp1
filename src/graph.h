@@ -1,4 +1,5 @@
 #pragma once
+#include <stdio.h>
 #include <stdbool.h>
 
 #include "list.h"
@@ -50,6 +51,12 @@ vertex vd_get_id(vertex_data* vdata);
 
 void graph_free(graph* g);
 
+struct tp_info {
+    struct graph* g;
+    int k;
+    int end;
+    int start;
+};
 
 /*Ler o grafo do arquivo e representa-o com lista de adjacência*/
 struct tp_info parse_info(FILE* input_file);
