@@ -4,6 +4,7 @@
 
 #include "list.h"
 
+
 typedef unsigned int vertex;
 typedef unsigned long int weight;
 
