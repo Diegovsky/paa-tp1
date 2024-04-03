@@ -19,29 +19,6 @@ typedef struct {
     weight weight;
 } edge;
 
-struct tp_info {
-    struct graph* g;
-    int k;
-    int end;
-    int start;
-};
-
-struct graph {
-    list* vertices;
-};
-
-struct vertex_data {
-    list* edges;
-    vertex id;
-};
-
-struct cslot {
-    weight w;
-    char c;
-};
-
-
-
 
 typedef struct vertex_data vertex_data;
 typedef struct graph graph;

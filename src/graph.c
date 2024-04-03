@@ -6,6 +6,81 @@
 #include "list.h"
 #include "heap.h"
 
+struct tp_info {
+    struct graph* g;
+    int k;
+    int end;
+    int start;
+};
+
+struct graph {
+    list* vertices;
+};
+
+struct vertex_data {
+    list* edges;
+    vertex id;
+};
+
+struct cslot {
+    weight w;
+    char c;
+};
+
+
+struct tp_info parse_info(FILE* input_file) {
+    int m, n, k;
+    bool letters = false;
+    char* line = malloc(256);
+
+    fgets(line, 255, input_file);
+    if(strstr(line, "LETTER") != NULL) {
+        letters = true;
+        fgets(line, 255, input_file);
+    }
+    sscanf(line, "%d %d %d\n", &n, &m, &k);
+    graph* g = graph_new(n);
+
+    list* cities_list = list_new(sizeof(vertex));
+
+    for(int i = 0; i < n; i++) {
+        vertex v = graph_add_vertex(g);
+        list_push(cities_list, &v);
+    }
+
+    vertex* cities = cities_list->elements;
+    for(int i = 0; i < m; i++) {
+        int u = 0, v = 0;
+        weight w = 0;
+        do
+            if(fgets(line, 255, input_file) == NULL) goto end;
+        while(strcspn(line, "\n") == 0);
+        if(!letters) {
+            sscanf(line, "%d %d %lu\n", &v, &u, &w);
+            v = cities[v-1];
+            u = cities[u-1];
+        } else {
+            sscanf(line, "%c %c %lu\n", (char*)&v, (char*)&u, &w);
+            v -= 'a';
+            u -= 'a';
+        }
+        graph_add_edge(g, v, u, w);
+    }
+    end:;
+
+    int start = cities[0];
+    int end = cities[n-1];
+
+    free(line);
+    list_free(cities_list);
+    return (struct tp_info){
+        .g=g,
+        .k=k,
+        .start=start,
+        .end = end,
+    };
+}
+
 
 static vertex_data vdata_new(vertex id) {
     vertex_data vdata = {.edges = list_new(sizeof(edge)), .id=id};
@@ -123,58 +198,5 @@ void graph_free(graph* g) {
     free(g);
 }
 
-
-struct tp_info parse_info(FILE* input_file) {
-    int m, n, k;
-    bool letters = false;
-    char* line = malloc(256);
-
-    fgets(line, 255, input_file);
-    if(strstr(line, "LETTER") != NULL) {
-        letters = true;
-        fgets(line, 255, input_file);
-    }
-    sscanf(line, "%d %d %d\n", &n, &m, &k);
-    graph* g = graph_new(n);
-
-    list* cities_list = list_new(sizeof(vertex));
-
-    for(int i = 0; i < n; i++) {
-        vertex v = graph_add_vertex(g);
-        list_push(cities_list, &v);
-    }
-
-    vertex* cities = cities_list->elements;
-    for(int i = 0; i < m; i++) {
-        int u = 0, v = 0;
-        weight w = 0;
-        do
-            if(fgets(line, 255, input_file) == NULL) goto end;
-        while(strcspn(line, "\n") == 0);
-        if(!letters) {
-            sscanf(line, "%d %d %lu\n", &v, &u, &w);
-            v = cities[v-1];
-            u = cities[u-1];
-        } else {
-            sscanf(line, "%c %c %lu\n", (char*)&v, (char*)&u, &w);
-            v -= 'a';
-            u -= 'a';
-        }
-        graph_add_edge(g, v, u, w);
-    }
-    end:;
-
-    int start = cities[0];
-    int end = cities[n-1];
-
-    free(line);
-    list_free(cities_list);
-    return (struct tp_info){
-        .g=g,
-        .k=k,
-        .start=start,
-        .end = end,
-    };
-}
 
 
