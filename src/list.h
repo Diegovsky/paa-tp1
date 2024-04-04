@@ -17,7 +17,10 @@ list* list_new_with_capacity(size_t element_size, size_t capacity);
 
 void list_push(list* l, void* element);
 bool list_insert(list* l, void* element, size_t index);
+// Retorna o elemento no índice `index`. Caso o índice esteja fora da lista, retorna `NULL`.
 void* list_get(list* l, size_t index);
+// Retorna o elemento no índice `index` sem checar se está fora da lista
+void* list_get_unchecked(list* l, size_t index);
 
 bool list_remove(list* l, size_t index);
 

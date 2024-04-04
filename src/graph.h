@@ -41,7 +41,6 @@ vertex_data* graph_get_vertex_data(graph* g, vertex v);
 list* graph_get_vertices(graph* g);
 
 bool graph_add_edge(graph* g, vertex v, vertex u, weight w);
-bool graph_remove_edge(graph* g, vertex v, vertex u);
 
 list* graph_shortest_paths(graph* g, int k, vertex source, vertex dest);
 
@@ -58,5 +57,5 @@ struct tp_info {
     int start;
 };
 
-/*Ler o grafo do arquivo e representa-o com lista de adjacência*/
+/*Lê o grafo do arquivo e representa-o com lista de adjacência*/
 struct tp_info parse_info(FILE* input_file);

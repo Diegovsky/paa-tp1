@@ -57,6 +57,10 @@ bool list_insert(list* l, void* element, size_t index) {
     return true;
 }
 
+void* list_get_unchecked(list* l, size_t index) {
+    return address_of(l, index);
+}
+
 void* list_get(list* l, size_t index) {
     // Caso o índice esteja fora do vetor, retorna NULL;
     if (index >= l->len) {

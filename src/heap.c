@@ -17,19 +17,15 @@ heap* heap_new(size_t element_size) {
     return (heap*)list_new(element_size+sizeof(slot));
 }
 
-#ifndef HEAP_LIST
-
 static void memswap(void *a, void *b, size_t element_size) {
-    char* aptr = a;
-    char* bptr = b;
-    for(int i = 0; i < element_size; i++) {
-        char temp = aptr[i];
-        aptr[i] = bptr[i];
-        bptr[i] = temp;
-    }
+    char *temp = malloc(element_size);
+    memcpy(temp, a, element_size);
+    memcpy(a, b, element_size);
+    memcpy(b, temp, element_size);
+    free(temp);
 }
 
-// Cria e retorna uma fila de prioridade a partir de um vetor;
+// 
 void heap_push(heap* h, void* element, weight w) {
     const size_t element_size = h->list.element_size;
 
@@ -101,47 +97,4 @@ bool heap_pop(heap* h, void* element, weight* w) {
         i = nexti;
     }
     return true;
-}
-
-#else 
-
-void heap_push(heap* h, void* element, weight w) {
-    list* l = &h->list;
-    size_t left = 0;
-    size_t right = l->len-1;
-    while(left <= right) {
-        size_t middle = left + (right - left) / 2;
-        slot* s = list_get(l, middle);
-
-        if(!s || s->w == w) break;
-        else if(s->w < w) {
-            right = middle - 1;
-        } else {
-            left = middle + 1;
-        }
-    }
-
-    slot *new_slot = malloc(l->element_size);
-    memcpy(&new_slot->ptr, element, l->element_size - sizeof(slot));
-    new_slot->w = w;
-
-    list_insert(l, new_slot, left);
-
-    free(new_slot);
-}
-
-bool heap_pop(heap* h, void* element, weight* w) {
-    list* l = &h->list;
-    slot* s = list_get(l, l->len-1);
-    if(s == NULL) return false;
-    memcpy(element, s->ptr, l->element_size - sizeof(slot));
-    *w = s->w;
-    list_remove(l, l->len-1);
-    return true;
-}
-
-#endif
-
-void heap_free(heap* h) {
-    list_free(&h->list);
 }
