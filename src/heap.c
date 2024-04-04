@@ -98,3 +98,8 @@ bool heap_pop(heap* h, void* element, weight* w) {
     }
     return true;
 }
+
+
+void heap_free(heap* h) {
+    list_free(&h->list);
+}
