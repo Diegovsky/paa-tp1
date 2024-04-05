@@ -21,7 +21,6 @@ typedef struct {
 } edge;
 
 
-typedef struct vertex_data vertex_data;
 typedef struct graph graph;
 
 /* Cria e inicializa um grafo.
@@ -37,16 +36,11 @@ graph* graph_new(size_t vertex_capacity);
 vertex graph_add_vertex(graph* g);
 /* Retorna uma estrutura de dados auxiliar que permite buscas rápidas sobre ligações de um nó
 */
-vertex_data* graph_get_vertex_data(graph* g, vertex v);
 list* graph_get_vertices(graph* g);
 
 bool graph_add_edge(graph* g, vertex v, vertex u, weight w);
 
 list* graph_shortest_paths(graph* g, int k, vertex source, vertex dest);
-
-edge* vd_get_edge(vertex_data* vdata, vertex u); 
-list* vd_get_edges(vertex_data* vdata); 
-vertex vd_get_id(vertex_data* vdata); 
 
 void graph_free(graph* g);
 

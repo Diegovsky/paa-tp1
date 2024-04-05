@@ -1,10 +1,11 @@
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "graph.h"
 #include "list.h"
 #include "heap.h"
+
+typedef struct vertex_data vertex_data;
 
 struct graph {
     list* vertices;
@@ -134,6 +135,7 @@ list* graph_shortest_paths(graph* g, int k, vertex source, vertex dest) {
         vertex u;
         weight w;
         // Heap vazia, acabou o algoritmo
+        // O(1)
         if(!heap_pop(queue, &u, &w)) break;
         if(visit_count[u] == k) continue;
         // Marca o nó u como visitado denovo
@@ -153,23 +155,6 @@ list* graph_shortest_paths(graph* g, int k, vertex source, vertex dest) {
     heap_free(queue);
 
     return paths;
-}
-
-edge* vd_get_edge(vertex_data* vdata, vertex u) {
-    list_foreach(vdata->edges, edge, e) {
-        if(e->u == u) {
-            return e;
-        }
-    }
-    return NULL;
-}
-
-list* vd_get_edges(vertex_data* vdata) {
-    return vdata->edges;
-}
-
-vertex vd_get_id(vertex_data* vdata) {
-    return vdata->id;
 }
 
 void graph_free(graph* g) {

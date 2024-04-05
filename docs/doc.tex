@@ -1,0 +1,88 @@
+\documentclass[12pt]{article}
+
+\title{Titulo}
+\date{Maio de 2023}
+\author{Diego Augusto}
+
+% Syntax highlighting:
+% \usepackage{minted}
+% Imagens:
+\usepackage{graphicx}
+\graphicspath{ {./imagens/} }
+% \usepackage[margin=3cm]{geometry}
+\usepackage[
+backend=biber,
+style=alphabetic,
+sorting=ynt
+]{biblatex} %Imports biblatex package
+\addbibresource{./cit.bib}
+
+\newcommand \image[1]{\noindent
+    \includegraphics[width=\textwidth]{#1}}
+
+\usepackage{indentfirst}
+\setlength{\parindent}{1.5cm}
+
+\begin{document}
+    \pagenumbering{arabic}
+
+    \maketitle
+    \newpage
+    \section{Introdução}
+    O problema proposto para solucionar reside em um contexto de reinos
+    encantados, onde deseja-se encontrar os $K$ caminhos mínimos saindo do reino Mysthollow até o reino de Luminae. Entre esses
+    reinos existem $V$ cidades, e os caminhos entre as cidades contêm desafios. Este
+    problema é bem conhecido na literatura e pode ser representado por um grafo.
+    Portanto, aplicaremos uma técnica para encontrar o caminho mínimo (ou custo
+    mínimo) em um grafo ponderado, onde os vértices são as cidades, tendo a
+    cidade inicial como o reino de Mysthollow e a cidade final como o reino de
+    Luminae. As arestas representam as ligações entre as cidades, e os desafios
+    entre as cidades serão representados pelos pesos. Assim, resolver este
+    problema significa determinar o caminho entre dois vértices com o custo
+    mínimo, ou seja, com o menor tempo de viagem.
+
+    Os dados para a construção do grafo são fornecidos pelo usuário através de um
+    arquivo de entrada, e a solução do problema será apresentada em um arquivo de
+    saída. O principal foco deste trabalho é o desenvolvimento e análise de
+    algoritmos que solucionam o problema, levando em consideração a eficiência deles
+    nos diversos contextos em que o problema pode estar inserido. Portanto, durante
+    a execução do trabalho, foram analisados mais de um algoritmo para encontrar
+    caminhos mínimos, pois a eficiência de alguns algoritmos é comprometida em
+    certos contextos possíveis.
+
+    Diante disso, é necessário desenvolver um programa que, além de encontrar a
+    solução, preocupa-se com a otimização e facilite a manutenção por meio de boas
+    práticas de programação e uma documentação adequada, como será demonstrado nas
+    próximas seções.
+    \section{Desenvolvimento do Projeto}
+
+    \image{fluxo}
+
+    \section{Detalhes de implementação}
+    Para representar o grafo, utilizamos a representação de lista de adjacência.
+    Uma lista de adjacência consiste em uma lista de tamanho $|V|$, onde cada
+    elemento guarda uma lista encadeada contendo as arestas do nó naquele
+    índice. Ou seja: as arestas que saem do nó $v$ ficam guardadas no índice
+    $v-1$ da lista de adjacência.
+
+    Fizemos essa escolha pois é uma representação relativamente simples de se
+    implementar, além de performar bem em grafos esparsos e razoavelmente em
+    grafos densos se comparado à uma matriz de adjacência.
+
+    \\
+    \textbf{Imagem de uma lista de adjacencia}
+    \\
+
+    Para desenvolver a solução, optamos pelo algoritmo de Eppstein. Fizemos essa
+    escolha pensando em várias características do problema, como a quantidade de
+    nós, arestas e o valor de $K$. Isso se deve ao fato de que os valores de $K$
+    não excedem 10, tornando o algoritmo bem rápido. O motivo será explicado nas
+    próximas seções.
+
+
+
+
+    
+    \printbibliography[title={Whole bibliography}]
+
+\end{document}

@@ -1,3 +1,9 @@
 build/
 tp1
 *.zip
+
+*.log
+*.pdf
+*.xml
+*.aux
+*.bcf
