@@ -12,13 +12,11 @@
 % \usepackage[margin=3cm]{geometry}
 \usepackage[
 backend=biber,
-style=alphabetic,
-sorting=ynt
+style=ieetr,
 ]{biblatex} %Imports biblatex package
-\addbibresource{./cit.bib}
+\addbibresource{cit.bib}
 
-\newcommand \image[1]{\noindent
-    \includegraphics[width=\textwidth]{#1}}
+\newcommand\image[1]{\noindent\includegraphics[width=\textwidth]{#1}}
 
 \usepackage{indentfirst}
 \setlength{\parindent}{1.5cm}
@@ -58,7 +56,7 @@ sorting=ynt
 
     \image{fluxo}
 
-    \section{Detalhes de implementação}
+    \subsection{Detalhes de implementação}
     Para representar o grafo, utilizamos a representação de lista de adjacência.
     Uma lista de adjacência consiste em uma lista de tamanho $|V|$, onde cada
     elemento guarda uma lista encadeada contendo as arestas do nó naquele
@@ -67,7 +65,7 @@ sorting=ynt
 
     Fizemos essa escolha pois é uma representação relativamente simples de se
     implementar, além de performar bem em grafos esparsos e razoavelmente em
-    grafos densos se comparado à uma matriz de adjacência.
+    grafos densos se comparado à uma matriz de adjacência \cite{codeforce}.
 
     \textbf{Imagem de uma lista de adjacencia}
     \\
@@ -78,10 +76,26 @@ sorting=ynt
     não excedem 10, tornando o algoritmo bem rápido. O motivo será explicado nas
     próximas seções.
 
+    \subsection{Lista Dinâmica}
+    Para implementar várias estruturas de dados, criamos uma lista paramétrica
+    homogênea, que funciona para vários tipos de elementos, todos do mesmo tipo,
+    como as listas de linguagens de programação com suporte para tipos
+    paramétricos (Rust, Java, C++, etc). Sua implementação encontra-se nos
+    arquivos \texttt{list.h} e \texttt{list.c}.
 
+    A nossa lista consiste em um ponteiro para um arranjo alocado dinamicamente,
+    o tamanho do elemento, o comprimento da lista e a capacidade de alocação de
+    memória. Para tornar as inserções eficientes, reservamos mais espaço do que
+    elementos contidos na lista, assim, quando temos espaço sobrando, apenas
+    precisamos incrementar o contador de elementos. Isso faz com que as
+    inserções não tenham um impacto significativo na execução do programa, pois
+    as realocações são esporádicas.
 
+    \image{lista}
 
-    
+    \newpage
+
+    \printbibliography[title={Fontes}]
 
 
     \section{Análises de complexidades}
