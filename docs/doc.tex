@@ -31,7 +31,7 @@ sorting=ynt
     \section{Introdução}
     O problema proposto para solucionar reside em um contexto de reinos
     encantados, onde deseja-se encontrar os $K$ caminhos mínimos saindo do reino Mysthollow até o reino de Luminae. Entre esses
-    reinos existem $V$ cidades, e os caminhos entre as cidades contêm desafios. Este
+    reinos existem $N$ cidades, e os caminhos entre as cidades contêm desafios. Este
     problema é bem conhecido na literatura e pode ser representado por um grafo.
     Portanto, aplicaremos uma técnica para encontrar o caminho mínimo (ou custo
     mínimo) em um grafo ponderado, onde os vértices são as cidades, tendo a
@@ -69,7 +69,6 @@ sorting=ynt
     implementar, além de performar bem em grafos esparsos e razoavelmente em
     grafos densos se comparado à uma matriz de adjacência.
 
-    \\
     \textbf{Imagem de uma lista de adjacencia}
     \\
 
@@ -83,6 +82,18 @@ sorting=ynt
 
 
     
-    \printbibliography[title={Whole bibliography}]
 
+
+    \section{Análises de complexidades}
+    O algoritmo de Eppstein utiliza como base o algoritmo de Dijkstra, então antes de analisarmos o Eppstein, vamos analisar o Dijkstra.
+    O Dijkstra, quando implementado com listas de adjacência e heap binária, tem complexidade de $O(n\log n + m)$, sendo $n$ os vértices e $m$ as arestas. Como o algoritmo inicializa as distâncias de cada vértice e cria uma fila de prioridade com o custo de $O(n)$, a cada passo do algoritmo, ele extrai o vértice com custo mínimo e aplica a técnica de relaxamento, que tem custo $O(\log n)$, e todas as arestas são visitadas com custo $O(m)$. Portanto, chegamos na complexidade de $O(n\log n + m)$.
+    
+    Como dito nas seções anteriores, o Eppstein assume que $n \leq m$, então a ordem de complexidade que domina assintoticamente é em função de $m$, por isso que no Eppstein analisamos em função de $m$, não mais de $n$ como no Dijkstra. Além disso, o Eppstein permite que um vértice apareça várias vezes na heap, pois estamos analisando todas as arestas que incidem naquele vértice. Por isso, o pior caso aumenta para $m$, pois isso representa outros caminhos, no caso de arestas compartilhadas.
+    
+    O algoritmo analisa cada aresta que sai do vértice atual e realiza uma inserção na heap cujo o custo no pior caso é $O(\log m)$. Como esse processo é feito no máximo $m$ vezes, o custo total para inserir todas as arestas na heap é $O(m \log m)$. Porém, como queremos os $k$ menores caminhos, essa lógica será executada $k$ vezes, então conclui-se que a complexidade do algoritmo de Eppstein é $O(km \log (km))$.
+
+    \section{Resultados e Análises}
+
+
+    \printbibliography[title={Whole bibliography}]
 \end{document}
