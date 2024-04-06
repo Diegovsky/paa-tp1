@@ -10,6 +10,4 @@ typedef struct {
 
 instant instant_now();
 
-double tv_elapsed(struct timeval after, struct timeval before);
-
 void instant_print_elapsed(instant after, instant before);

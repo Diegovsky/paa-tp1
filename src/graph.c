@@ -24,7 +24,7 @@ struct cslot {
 
 
 struct tp_info parse_info(FILE* input_file) {
-    int m, n, k;
+    int m, n, k = 10;
     bool letters = false;
     char* line = malloc(256);
 
@@ -34,6 +34,7 @@ struct tp_info parse_info(FILE* input_file) {
         fgets(line, 255, input_file);
     }
     sscanf(line, "%d %d %d\n", &n, &m, &k);
+    k = 10;
     graph* g = graph_new(n);
 
     list* cities_list = list_new(sizeof(vertex));
@@ -59,7 +60,7 @@ struct tp_info parse_info(FILE* input_file) {
             v -= 'a';
             u -= 'a';
         }
-        graph_add_edge(g, v, u, w);
+        graph_add_edge(g, v, u, 1);
     }
     end:;
 

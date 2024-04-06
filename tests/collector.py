@@ -46,9 +46,10 @@ def avgs_of(input_file: str) -> tuple[AvgTimes, AvgTimes]:
         if result.returncode != 0:
             print("Erro! ")
             print(result.stderr.decode('utf-8'))
-            raise Exception()
+            raise Exception('Falha ao executar programa ' + input_file)
 
-        lines = [float(line.strip()) for line in result.stdout.split()]
+        lines = [float(line.split(b':')[1].split()[0].strip()) for line in
+            result.stdout.split(b'\n') if b'segundos' in line]
 
         iotimes.push(*lines[:3])
         runtimes.push(*lines[3:])

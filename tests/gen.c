@@ -26,10 +26,13 @@ int main(int argc, char** argv) {
     for(int i = 0; i < N; i++) {
         graph_add_vertex(g);
     }
-    for(int i = 0; i < M; i++) {
-        int v = rand() % N;
+    int step = 5;
+    for(int i = 0; i < M/step; i+=step) {
+        int v = rand() % step + i;
         int u;
-        do { u = rand() % N; } while(u == v);
+        do {
+            u = (rand() % (step + i)*2);
+        } while(u == v);
         int w = rand() % 10000;
         graph_add_edge(g, v, u, w);
     }
@@ -39,8 +42,9 @@ int main(int argc, char** argv) {
     int visited[N];
     memset(visited, 0, sizeof(visited));
     while(nodelist->len > 0) {
-        v = *(vertex*)list_get_unchecked(nodelist, nodelist->len-1);
+        v = *(vertex*)list_get(nodelist, nodelist->len-1);
         list_remove(nodelist, nodelist->len-1);
+        if(v == N-1) break;
         if(visited[v]) continue;
 
         visited[v] = 1;
@@ -53,7 +57,7 @@ int main(int argc, char** argv) {
 
     // Caso o último vértice não tenha sido atingido, adicionamos arestas extras
     // para garantir.
-    for(int i = N-1; i > 0; i++) {
+    for(int i = N-1; i > 0; i--) {
         if(visited[i]) break;
         M++;
         graph_add_edge(g, i-1, i, rand() % 10000);
@@ -62,7 +66,7 @@ int main(int argc, char** argv) {
     for(int i = 0; i < N; i ++) {
         list* children = graph_list_edges_of(g, i);
         list_foreach(children, edge, e) {
-            fprintf(outfile, "%d %d %ld\n", e->v, e->u, e->weight);
+            fprintf(outfile, "%d %d %ld\n", e->v+1, e->u+1, 1L);
         }
     }
 

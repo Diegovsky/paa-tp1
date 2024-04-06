@@ -4,18 +4,11 @@ import sys
 import json
 import collector
 
-counts_str = "10 20 50 100 1000 5000 10000 20000 50000 100000".split(" ")
-counts = list(map(int, counts_str)) # type: list[int]
+with open('counts.json', 'r') as f:
+    counts = json.load(f)
+    counts.sort()
+    filenames = [f'test_{x}.txt' for x in counts]
 
-filenames = []
-
-def gen(gen_files):
-    for y in counts:
-        x = y*10
-        filename = f'test_{x}_{y}.txt'
-        if gen_files or not os.path.isfile(filename):
-            os.system(f'./gen {x} {y} {filename}')
-        filenames.append(filename)
 
 def analyze():
     iotimes = []
@@ -35,24 +28,36 @@ def analyze():
 
     return obj
 
-def graph(times: list[collector.Times], counts, output):
+def graph(name, times: list[collector.AvgTimes], counts, output):
     import matplotlib.pyplot as plt
+    import numpy as np
+    from scipy.optimize import curve_fit
 
-    x_values = [t.phys for t in times]
-    _, ax = plt.subplots()
+    times_phys = [t.phys for t in times]
+    x_values = counts
+    y_values = times_phys
 
-    ax.plot(x_values, counts)
-    ax.set_yscale('log')
+    def f(x, a, b):
+        return a * x * np.log(x) + b
+    
+    params, covariance = curve_fit(f, x_values, y_values)
 
-    ax.set_xlabel('Tempo de execução (físico)')
-    ax.set_ylabel('Quantidade de arestas')
-    ax.set_title('Logarithmic Plot')
+    # Generate x values for plotting
+    x_plot = np.linspace(min(x_values), max(x_values), 1000)
+
+    # Plot the data points
+    plt.scatter(x_values, y_values, label='Data')
+
+    # Plot the fitted curve
+    plt.plot(x_plot, f(x_plot, *params), label='Fitted curve', color='orange')
+
+    plt.ylabel('Tempo em segundos (físico)')
+    plt.xlabel('Quantidade de arestas')
+    plt.title(name)
 
     plt.savefig(output)
 
-
-gen_files = len(sys.argv) > 1 and sys.argv[1] == '-g'
-gen(gen_files)
+    plt.close()
 
 try:
     with open('results.json') as r:
@@ -61,8 +66,10 @@ except FileNotFoundError:
     obj = analyze()
 
 counts = obj['counts']
-graph(obj['iotimes'], counts, 'iotimes.pdf')
-graph(obj['runtimes'], counts, 'runtimes.pdf')
+iotimes = [collector.AvgTimes(*x) for x in obj['iotimes']]
+runtimes = [collector.AvgTimes(*x) for x in obj['runtimes']]
+graph('Tempos de E/S', iotimes, counts, 'iotimes.pdf')
+graph('Tempos de Execução', runtimes, counts, 'runtimes.pdf')
 
 
 
