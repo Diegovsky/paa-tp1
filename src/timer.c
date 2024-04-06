@@ -14,9 +14,7 @@ instant instant_now() {
     return now;
 }
 
-#ifndef PRECISION
 #define PRECISION ".5"
-#endif
 
 double tv_elapsed(struct timeval after, struct timeval before) {
     struct timeval diff;
@@ -25,10 +23,16 @@ double tv_elapsed(struct timeval after, struct timeval before) {
 }
 
 void instant_print_elapsed(instant after, instant before) {
+    #ifndef MACHINE
     double sys = tv_elapsed(after.rtime.ru_stime, before.rtime.ru_stime);
     double user = tv_elapsed(after.rtime.ru_utime, before.rtime.ru_utime);
+    #endif
     double phys = tv_elapsed(after.tv, before.tv);
+    #ifndef MACHINE
     printf("\tSystem time: %"PRECISION"lf segundos\n", sys);
     printf("\tUser time: %"PRECISION"lf segundos\n", user);
     printf("\tTempo físico: %"PRECISION"lf segundos\n", phys);
+    #else
+    printf("%lf\n", phys);
+    #endif
 }

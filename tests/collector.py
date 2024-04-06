@@ -19,6 +19,9 @@ class Times:
         self.user = []
         self.phys = []
 
+    def push_phys(self, phys):
+        self.phys.append(phys)
+
     def push(self, sys, user, phys):
         self.sys.append(sys)
         self.user.append(user)
@@ -41,18 +44,18 @@ def avgs_of(input_file: str) -> tuple[AvgTimes, AvgTimes]:
     runtimes = Times('Algorithm times')
 
     def run_program(input_file):
-        result = subprocess.run(['../tp1', '-i', input_file], capture_output=True)
+        result = subprocess.run(['./runner', '-i', input_file], capture_output=True)
 
         if result.returncode != 0:
             print("Erro! ")
             print(result.stderr.decode('utf-8'))
             raise Exception('Falha ao executar programa ' + input_file)
 
-        lines = [float(line.split(b':')[1].split()[0].strip()) for line in
+        lines = [float(line) for line in
             result.stdout.split(b'\n') if b'segundos' in line]
 
-        iotimes.push(*lines[:3])
-        runtimes.push(*lines[3:])
+        iotimes.push_phys(lines[0])
+        runtimes.push_phys(lines[1])
 
     run_count = 5
     for _ in range(run_count):

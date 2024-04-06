@@ -2,8 +2,10 @@
 include ../Makefile
 
 
-gen: gen.c $(objects)
-	$(CC) $(CFLAGS) $^ -o $@
+$(ROOT_DIR)/tests/runner: $(SRC)/main.c $(objects)
+	$(CC) -DMACHINE $(CFLAGS) $^ -o $@
 
+clean:
+	rm $(ROOT_DIR)/tests/runner
 
-.DEFAULT_GOAL := gen
+.DEFAULT_GOAL := $(ROOT_DIR)/tests/runner
