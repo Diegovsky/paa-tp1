@@ -78,6 +78,12 @@ style=ieeetr,
     [citação], que percorre o gráfo e descobre os $k$ menores caminhos. E então,
     guardamos os pesos dos menores caminhos no arquivo de saída.
 
+    \subsection{Análise preliminar}
+
+    Durante a execução do trabalho, ficou evidente a importância de uma boa organização para iniciar o desenvolvimento do algoritmo, desde uma boa análise do problema proposto até as escolhas para a sua resolução. Partindo disso, percebemos que seria crucial abordar algumas questões importantes no problema, como os limites de suas entradas e suas especificações. Durante os estudos das heurísticas que poderiam solucionar o problema, encontramos alguns algoritmos que pareciam ser boas opções, porém não eram adequados para o problema proposto. Um deles era o algoritmo de Yen, que, embora encontrasse o caminho mínimo em um grafo, não encontrava os k caminhos mínimos devido à sua incompatibilidade com loops, impossibilitando assim a correta identificação dos k caminhos. A primeira impressão foi de que o algoritmo solucionaria o problema, mas como os testes estiveram presentes desde o início do desenvolvimento do software, foi possível detectar rapidamente o problema quando executamos um teste mais específico e não obtivemos o resultado esperado. 
+    
+    A partir disso, percebemos que o algoritmo de Yen não era uma solução viável, pois não tratava dos loops e resultava em caminhos mínimos incorretos devido às arestas compartilhadas. Sendo assim, buscamos um algoritmo que corrigisse as deficiências encontradas no Yen, baseando-se no mesmo princípio do Dijkstra, mas modificando sua lógica para lidar com as exceções. Com isso, optamos pelo algoritmo de Eppstein, o qual produziu excelentes resultados em diversos contextos, como demonstrado na seção de testes, proporcionando-nos uma solução eficiente para o problema.
+
     \subsection{Detalhes de implementação}
     Para representar o grafo, utilizamos a representação de lista de adjacência.
     Uma lista de adjacência consiste em uma lista de tamanho $n$, onde cada
@@ -150,7 +156,6 @@ style=ieeetr,
     heap, com a prioriade de $w + l$; onde $w$ é o peso associado a $v$, e $l$ é
     o peso associado à aresta $v - u$. Para cada vez que o $t$ é visitado, é
     encontrado um caminho mínimo, até que $t$ seja visitado no máximo $k$ vezes.
-
     Quando o algoritmo retornar, teremos encontrado os pesos dos $k$ caminhos.
 
 
@@ -165,6 +170,10 @@ style=ieeetr,
 
     \section{Resultados e Análises}
 
+
+    \section{Conclusão}
+ 
+    
 
     \printbibliography[title={Whole bibliography}]
 \end{document}
