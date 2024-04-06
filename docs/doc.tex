@@ -2,8 +2,10 @@
 
 \title{Titulo}
 \date{Maio de 2023}
-\author{Diego Augusto}
+\author{Diego Augusto \and Lucas Costa}
 
+% portugues
+\usepackage[main=portuguese]{babel}
 % Syntax highlighting:
 \usepackage{minted}
 % Imagens:
@@ -15,6 +17,7 @@ backend=biber,
 style=ieeetr,
 ]{biblatex} %Imports biblatex package
 \addbibresource{cit.bib}
+
 
 \def\widthmod{}
 
@@ -131,6 +134,8 @@ style=ieeetr,
 
     \newpage
     \subsection{Eppstein}
+    \begin{figure}[htp]
+    \centering
     \begin{minted}{python}
         def eppstein(graph, s, t, k):
             q = Heap()
@@ -149,7 +154,11 @@ style=ieeetr,
 
                 for (u, l) in g.sucessors(v):
                     push(q, u, w + l)
+
     \end{minted}
+    \label{fig: pseudo}
+    \caption{Pseudocódigo do algoritmo de Eppstein}
+    \end{figure}
 
     O algoritmo de Eppstein consiste em sucessivamente retirar um nó $v$ da fila
     de prioridade. Em cada iteração, checamos se $v$ já foi visitado o máximo de
