@@ -18,11 +18,11 @@ int main(int argc, char** argv) {
         switch (c) {
             case 'i':
                 input_file = fopen(optarg, "r");
-                if(!input_file) printf("Falha ao abrir arquivo %s\n", optarg);
+                if(!input_file) fprintf(stderr, "Falha ao abrir arquivo %s\n", optarg);
                 break;
             case 'o':
                 output_file = fopen(optarg, "w");
-                if(!output_file) printf("Falha ao abrir arquivo %s\n", optarg);
+                if(!output_file) fprintf(stderr, "Falha ao abrir arquivo %s\n", optarg);
                 break;
             default:
                 ;;

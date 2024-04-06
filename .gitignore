@@ -1,6 +1,9 @@
 build/
 tp1
 *.zip
+*.txt
+__pycache__/
+test/gen
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

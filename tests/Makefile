@@ -3,7 +3,7 @@ include ../Makefile
 
 
 gen: gen.c $(objects)
-	$(CC) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@
 
 
 .DEFAULT_GOAL := gen

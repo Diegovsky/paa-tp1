@@ -13,12 +13,14 @@ edge* get_edge(graph* g, vertex v, vertex u) {
 }
 
 int main(int argc, char** argv) {
-    if(argc != 3) {
-        fprintf(stderr, "Esperava apenas 2 argumentos\n");
+    if(argc != 4) {
+        fprintf(stderr, "Esperava apenas 3 argumentos\n");
+        return 1;
     }
     int N, M;
     sscanf(argv[1], "%d", &N);
     sscanf(argv[2], "%d", &M);
+    FILE* outfile = fopen(argv[3], "w");
     srand(time(NULL));
     graph* g = graph_new(N);
     for(int i = 0; i < N; i++) {
@@ -35,7 +37,7 @@ int main(int argc, char** argv) {
     vertex v = 0;
     list_push(nodelist, &v);
     int visited[N];
-    memset(visited, 0, sizeof(int) * N);
+    memset(visited, 0, sizeof(visited));
     while(nodelist->len > 0) {
         v = *(vertex*)list_get_unchecked(nodelist, nodelist->len-1);
         list_remove(nodelist, nodelist->len-1);
@@ -56,11 +58,15 @@ int main(int argc, char** argv) {
         M++;
         graph_add_edge(g, i-1, i, rand() % 10000);
     }
-    printf("%d %d %d\n", N, M, 10);
+    fprintf(outfile, "%d %d %d\n", N, M, 10);
     for(int i = 0; i < N; i ++) {
         list* children = graph_list_edges_of(g, i);
         list_foreach(children, edge, e) {
-            printf("%d %d %ld\n", e->v, e->u, e->weight);
+            fprintf(outfile, "%d %d %ld\n", e->v, e->u, e->weight);
         }
     }
+
+    list_free(nodelist);
+    graph_free(g);
+    fclose(outfile);
 }
