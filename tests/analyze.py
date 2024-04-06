@@ -66,9 +66,7 @@ except FileNotFoundError:
     obj = analyze()
 
 counts = obj['counts']
-iotimes = [collector.AvgTimes(*x) for x in obj['iotimes']]
 runtimes = [collector.AvgTimes(*x) for x in obj['runtimes']]
-graph('Tempos de E/S', iotimes, counts, 'iotimes.svg')
 graph('Tempos de Execução', runtimes, counts, 'runtimes.svg')
 
 

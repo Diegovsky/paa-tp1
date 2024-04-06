@@ -16,8 +16,11 @@ style=ieeetr,
 ]{biblatex} %Imports biblatex package
 \addbibresource{cit.bib}
 
-\newcommand\image[2]{\noindent \begin{figure}[h]
-    \includegraphics[width=\textwidth]{#1}
+\def\widthmod{}
+
+\newcommand*\image[2]{\noindent \begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\widthmod\textwidth]{#1}
     \caption{#2}
     \label{fig: #1}
     \end{figure}
@@ -119,7 +122,7 @@ style=ieeetr,
     inserções não tenham um impacto significativo na execução do programa, pois
     as realocações são esporádicas.
 
-    \image{lista}
+    \image{lista}{Lista com capacidade}
 
     \newpage
 
@@ -168,12 +171,44 @@ style=ieeetr,
     
     O algoritmo analisa cada aresta que sai do vértice atual e realiza uma inserção na heap cujo o custo no pior caso é $O(\log m)$. Como esse processo é feito no máximo $m$ vezes, o custo total para inserir todas as arestas na heap é $O(m \log m)$. Porém, como queremos os $k$ menores caminhos, essa lógica será executada $k$ vezes, então conclui-se que a complexidade do algoritmo de Eppstein é $O(km \log (km))$.
 
+    \newpage
     \section{Resultados e Análises}
+    Como podemos ver na figura \ref{fig: runtimes}, a análise do desempenho do
+    algorítmo revelou que a nossa implementação desmonstrou consistentemente o
+    comportamento esperado pela função de complexidade $km \log km$ (representada
+    pela linha amarela), sendo $k$ fixado em 10. Estes dados foram obtidos
+    através da média de 5 execuções por teste.
 
+    Os testes estão localizados no
+    diretório \texttt{tests/} e foram projetados para avaliar o desempenho do
+    algoritmo em diferentes cenários. Cada teste varia em termos da quantidade de
+    vértices e arestas do grafo, abrangendo uma ampla gama de casos de uso. A
+    variedade de instâncias de teste inclui configurações com um número modesto de
+    vértices e arestas, como \( m = [20, 7, 6] \), até casos mais desafiadores com
+    grafos massivos, representados por \( m = [100202, 199945, 35299, 500, 149997,
+    200000] \).
+ 
+    \def\widthmod{0.5}
+    \image{runtimes}{Grafo}
+
+    \subsection{Discussão sobre Tempos de Execução}
+    Os tempos de usuário e sistema são duas diferentes formas de medir o tempo
+    de execução. O tempo de sistema mede quanto tempo o sistema operacional
+    executou tarefas para o programa, como ler arquivos, alocar memória, etc.
+    Enquanto o tempo de usuário mede a quantidade de tempo que o programa
+    utilizou a CPU.
+
+    É claro que, devido ao fato de que montar o grafo envolve muita leitura de
+    arquivo, o tempo de sistema será predominante ao de usuário para essa parte,
+    enquanto o tempo de usuário será predominante para a execução do algoritmo.
+
+    A soma destes valores equivale ao tempo físico. O tempo físico é a
+    quantidade de tempo que nós seres humanos percebemos passar. 
+
+
+    \image{iotimes}{Grafo}
 
     \section{Conclusão}
- 
-    
 
     \printbibliography[title={Whole bibliography}]
 \end{document}
