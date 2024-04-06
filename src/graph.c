@@ -7,6 +7,7 @@
 
 typedef struct vertex_data vertex_data;
 
+
 struct graph {
     list* vertices;
 };
@@ -87,7 +88,6 @@ graph* graph_new(size_t vertex_capacity) {
     return g;
 }
 
-// O(1)
 vertex graph_add_vertex(graph* g) {
     vertex v = g->vertices->len;
     vertex_data vdata = vdata_new(v);
@@ -95,17 +95,10 @@ vertex graph_add_vertex(graph* g) {
     return v; 
 }
 
-// O(1)
 vertex_data* graph_get_vertex_data(graph* g, vertex v) {
     return list_get(g->vertices, v);
 }
 
-// O(1)
-list* graph_get_vertices(graph* g) {
-    return g->vertices;
-}
-
-// O(1)
 bool graph_add_edge(graph* g, vertex v, vertex u, weight w) {
     vertex_data* vdata = graph_get_vertex_data(g, v);
     vertex_data* udata = graph_get_vertex_data(g, u);
@@ -115,6 +108,10 @@ bool graph_add_edge(graph* g, vertex v, vertex u, weight w) {
     edge e = (edge){.v = v, .u = u, .weight = w};
     list_push(vdata->edges, &e);
     return true;
+}
+
+list* graph_list_edges_of(graph* g, vertex v) {
+    return graph_get_vertex_data(g, v)->edges;
 }
 
 list* graph_shortest_paths(graph* g, int k, vertex source, vertex dest) {

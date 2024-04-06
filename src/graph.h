@@ -21,7 +21,6 @@ typedef struct {
     weight weight;
 } edge;
 
-
 typedef struct graph graph;
 
 /* Cria e inicializa um grafo.
@@ -35,12 +34,15 @@ graph* graph_new(size_t vertex_capacity);
 /* Adiciona um vértice no grafo e retorna seu valor.
 */
 vertex graph_add_vertex(graph* g);
-/* Retorna uma estrutura de dados auxiliar que permite buscas rápidas sobre ligações de um nó
-*/
-list* graph_get_vertices(graph* g);
 
 bool graph_add_edge(graph* g, vertex v, vertex u, weight w);
 
+/* Retorna uma lista de `edge`s.
+ */
+list* graph_list_edges_of(graph* g, vertex v);
+
+/* Retorna uma lista de `weight`s.
+ */
 list* graph_shortest_paths(graph* g, int k, vertex source, vertex dest);
 
 void graph_free(graph* g);
