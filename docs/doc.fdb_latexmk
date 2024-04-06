@@ -1,14 +1,14 @@
 # Fdb version 4
 ["biber doc"] 0 "doc.bcf" "doc.bbl" "doc" 0 -1
-  "cit.bib" 1712334112.85349 278 0aa3a47934ef7b1b0df16bb4703034ae ""
-  "doc.bcf" 1712373192.28644 99336 650f2786238d1fdf2e2a93af93e7c2e0 "pdflatex"
+  "cit.bib" 1712428367.02601 558 63816deb6cbe3b61230b817b73f17d16 ""
+  "doc.bcf" 1712431319.29867 99336 650f2786238d1fdf2e2a93af93e7c2e0 "pdflatex"
   (generated)
   "doc.bbl"
   "doc.blg"
   (rewritten before read)
-["pdflatex"] 1712373191.29052 "/home/lucascosta/Faculdade/quarto_periodo/aedsIII/paa-tp1/docs/doc.tex" "doc.pdf" "doc" 1712373192.42689 2
+["pdflatex"] 1712431318.0607 "/home/lucascosta/Faculdade/quarto_periodo/aedsIII/paa-tp1/docs/doc.tex" "doc.pdf" "doc" 1712431319.44707 2
   "/dev/null" 1712329783.23637 0 d41d8cd98f00b204e9800998ecf8427e ""
-  "/home/lucascosta/Faculdade/quarto_periodo/aedsIII/paa-tp1/docs/doc.tex" 1712373189.77844 10314 8d9c0ca3edd0977624c0aa51edc0211d ""
+  "/home/lucascosta/Faculdade/quarto_periodo/aedsIII/paa-tp1/docs/doc.tex" 1712431316.47266 12613 6ca8c6033b053d870c1f442b9d554845 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1136768653 1324 c910af8c371558dc20f2d7822f66fe64 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm" 1136768653 1524 4414a8315f39513458b80dfc63bff03a ""
@@ -84,12 +84,13 @@
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1684972800 40326 aba987258e6d6b6da5dec3a727ea174b ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1712331028.9933 4602579 3b3262ec8ed5367541293e1bf1830c9d ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1712330691 7862951 75d1bcd5d1fa71b689e4af1556998793 ""
-  "doc.aux" 1712373192.28444 1538 d40a793a267310a0f125c50fae55d838 "pdflatex"
-  "doc.bbl" 1712373078.10527 466 ee04f40f768daeed26442158e95aba61 "biber doc"
-  "doc.pyg" 1712373192.27544 441 671093494e0861758f7733643ed522c8 "pdflatex"
-  "doc.tex" 1712373189.77844 10314 8d9c0ca3edd0977624c0aa51edc0211d ""
+  "doc.aux" 1712431319.29567 1980 4d656714040d5659224d6b2e1a741c69 "pdflatex"
+  "doc.bbl" 1712430938.70223 466 ee04f40f768daeed26442158e95aba61 "biber doc"
+  "doc.pyg" 1712431319.23967 441 671093494e0861758f7733643ed522c8 "pdflatex"
+  "doc.tex" 1712431316.47266 12613 6ca8c6033b053d870c1f442b9d554845 ""
   "imagens//fluxo.png" 1712334112.85349 42457 3badaef3c66a6c64f35a366358c32eda ""
   "imagens//lista.png" 1712366407.40304 25064 feabc6e8303e223139be82d19e9f28c1 ""
+  "imagens//runtimes.png" 1712430581.13086 33515 cd58353973e4ac390354391fbbf5e07a ""
   (generated)
   "doc.aux"
   "doc.bcf"

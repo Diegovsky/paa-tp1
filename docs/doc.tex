@@ -150,6 +150,7 @@ style=ieeetr,
                 for (u, l) in g.sucessors(v):
                     push(q, u, w + l)
     \end{minted}
+
     O algoritmo de Eppstein consiste em sucessivamente retirar um nó $v$ da fila
     de prioridade. Em cada iteração, checamos se $v$ já foi visitado o máximo de
     vezes, e se sim, vamos para o próximo nó da heap. Se não, incrementamos o
@@ -188,15 +189,17 @@ style=ieeetr,
     grafos massivos, representados por \( m = [100202, 199945, 35299, 500, 149997,
     200000] \).
  
-    \def\widthmod{0.5}
-    \image{runtimes}{Grafo}
+    \def\widthmod{0.7}
+    \image{runtimes}{Gráfico dos tempos de execução do algoritmo Eppstein}
 
     \subsection{Discussão sobre Tempos de Execução}
     Os tempos de usuário e sistema são duas diferentes formas de medir o tempo
     de execução. O tempo de sistema mede quanto tempo o sistema operacional
     executou tarefas para o programa, como ler arquivos, alocar memória, etc.
     Enquanto o tempo de usuário mede a quantidade de tempo que o programa
-    utilizou a CPU.
+    utilizou a CPU. 
+    
+    Optamos pela biblioteca getrusage.h para avaliar o tempo de execução completo do nosso algoritmo, pois ela oferece uma variedade de informações úteis, incluindo o tempo total de processamento do programa. Isso representa uma vantagem significativa em comparação com a biblioteca gettimeofday.h, que só registra o tempo físico decorrido, podendo resultar em medições inconsistentes.
 
     É claro que, devido ao fato de que montar o grafo envolve muita leitura de
     arquivo, o tempo de sistema será predominante ao de usuário para essa parte,
@@ -205,8 +208,6 @@ style=ieeetr,
     A soma destes valores equivale ao tempo físico. O tempo físico é a
     quantidade de tempo que nós seres humanos percebemos passar. 
 
-
-    \image{iotimes}{Grafo}
 
     \section{Conclusão}
 

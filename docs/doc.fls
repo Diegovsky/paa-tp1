@@ -553,6 +553,10 @@ INPUT ./imagens//lista.png
 INPUT ./imagens//lista.png
 OUTPUT doc.pyg
 INPUT ./doc.pyg
+INPUT ./imagens//runtimes.png
+INPUT ./imagens//runtimes.png
+INPUT ./imagens//runtimes.png
+INPUT ./imagens//runtimes.png
 INPUT doc.aux
 INPUT ./doc.pyg
 INPUT doc.pyg
