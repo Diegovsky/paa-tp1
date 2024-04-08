@@ -39,7 +39,9 @@ int main(int argc, char** argv) {
     instant before = instant_now();
     struct tp_info info = parse_info(input_file);
     instant after = instant_now();
+    #ifndef MACHINE
     printf("Tempo de IO:\n");
+    #endif
     instant_print_elapsed(after, before);
 
     graph* g = info.g;
@@ -47,7 +49,9 @@ int main(int argc, char** argv) {
     before = instant_now();
     list* paths = graph_shortest_paths(g, info.k, info.start, info.end);
     after = instant_now();
+    #ifndef MACHINE
     printf("Tempo de resolução:\n");
+    #endif
     instant_print_elapsed(after, before);
 
     list_foreach(paths, weight, w) {

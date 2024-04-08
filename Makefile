@@ -26,6 +26,8 @@ $(BUILD)/%.o: $(SRC)/%.c $(SRC)/%.h
 clean:
 	rm -rf $(BUILD)
 	rm $(ROOT_DIR)/tp1
+	rm $(ROOT_DIR)/tests/runner
+	rm $(ROOT_DIR)/tests/gen
 
 .PHONY: clean
 

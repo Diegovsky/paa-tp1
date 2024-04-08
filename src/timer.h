@@ -5,7 +5,6 @@
 
 typedef struct {
     struct rusage rtime;
-    struct timeval tv;
 } instant;
 
 instant instant_now();

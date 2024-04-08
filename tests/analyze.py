@@ -3,14 +3,29 @@ import os
 import sys
 import json
 import collector
+import subprocess
 
-with open('counts.json', 'r') as f:
-    counts = json.load(f)
-    counts.sort()
-    filenames = [f'test_{x}.txt' for x in counts]
+def step(func):
+    def wrap(*args, **kwargs):
+        print("Running", func.__name__, "...")
+        return func(*args, **kwargs)
 
+    return wrap
 
+@step
 def analyze():
+    runtimes = []
+    for f in filenames:
+        print("Running test", f)
+        result = subprocess.run(['./runner', '-i', f, '-o', '/dev/null'], capture_output=True)
+        runtimes.append(float(result.stdout.split(b'\n')[1]))
+    obj = { 'runtimes': runtimes, 'counts': counts }
+    with open('results.json', 'w') as f:
+        json.dump(obj, f)
+    return obj
+
+@step
+def analyze_multi():
     iotimes = []
     runtimes = []
     for f in filenames:
@@ -28,19 +43,21 @@ def analyze():
 
     return obj
 
-def graph(name, times: list[collector.AvgTimes], counts, output):
+@step
+def graph(name, times: list[float], counts, output):
     import matplotlib.pyplot as plt
     import numpy as np
     from scipy.optimize import curve_fit
 
-    times_phys = [t.phys for t in times]
     x_values = counts
-    y_values = times_phys
+    y_values = times
 
     def f(x, a, b):
-        return a * x * np.log(x) + b
+        return a * x * np.log2(x) + b
     
     params, covariance = curve_fit(f, x_values, y_values)
+
+    print(y_values)
 
     # Generate x values for plotting
     x_plot = np.linspace(min(x_values), max(x_values), 1000)
@@ -51,6 +68,8 @@ def graph(name, times: list[collector.AvgTimes], counts, output):
     # Plot the fitted curve
     plt.plot(x_plot, f(x_plot, *params), label='Fitted curve', color='orange')
 
+    # plt.xscale('log')
+
     plt.ylabel('Tempo em segundos (físico)')
     plt.xlabel('Quantidade de arestas')
     plt.title(name)
@@ -59,14 +78,28 @@ def graph(name, times: list[collector.AvgTimes], counts, output):
 
     plt.close()
 
-try:
-    with open('results.json') as r:
-        obj = json.load(r)
-except FileNotFoundError:
+
+@step
+def graph_multi(name, times: list[collector.AvgTimes], counts, output):
+    graph(name, [x.phys for x in times], counts, output)
+
+@step
+def loadjson(name):
+    with open(name) as r:
+        return json.load(r)
+
+counts = loadjson('counts.json')
+counts.sort()
+filenames = [f'test_{x}.txt' for x in counts]
+
+if not os.path.exists('results.json'):
     obj = analyze()
+else:
+    obj = loadjson('results.json')
 
 counts = obj['counts']
-runtimes = [collector.AvgTimes(*x) for x in obj['runtimes']]
+runtimes = obj['runtimes']
+# runtimes = [collector.AvgTimes(*x) for x in obj['runtimes']]
 graph('Tempos de Execução', runtimes, counts, 'runtimes.svg')
 
 

@@ -59,7 +59,7 @@ struct tp_info parse_info(FILE* input_file) {
             v -= 'a';
             u -= 'a';
         }
-        graph_add_edge(g, v, u, 1);
+        graph_add_edge(g, v, u, w);
     }
     end:;
 
